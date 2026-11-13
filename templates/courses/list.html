@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block content %}
+<h2>Übungsbibliothek</h2>
+<form method="get" class="filters">
+<select name="style"><option value="">Alle Schwimmarten</option>{% for item in styles %}<option value="{{ item.pk }}" {% if selected_style == item.pk|stringformat:"s" %}selected{% endif %}>{{ item.name }}</option>{% endfor %}</select>
+<select name="equipment"><option value="">Alle Geräte</option>{% for item in equipment_options %}<option value="{{ item.pk }}" {% if selected_equipment == item.pk|stringformat:"s" %}selected{% endif %}>{{ item.name }}</option>{% endfor %}</select>
+<button>Filtern</button></form>
+<div class="grid">{% for exercise in exercises %}<article class="card">
+<h3>{{ exercise.title }}</h3><p>{{ exercise.swim_style }}</p><p>{{ exercise.description|truncatewords:30 }}</p>
+<p>{% for item in exercise.equipment.all %}{{ item.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+<form method="post" action="{% url 'toggle_favorite' exercise.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+<button>{% if exercise.pk in favorite_ids %}★ Favorit entfernen{% else %}☆ Favorisieren{% endif %}</button></form>
+</article>{% empty %}<p>Noch keine veröffentlichten Übungen vorhanden.</p>{% endfor %}</div>
+{% endblock %}
